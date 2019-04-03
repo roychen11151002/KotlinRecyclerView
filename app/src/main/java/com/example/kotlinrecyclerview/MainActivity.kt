@@ -28,8 +28,9 @@ class MainActivity : AppCompatActivity() {
             ItemName(R.drawable.orange, "Orange"), ItemName(R.drawable.peach, "Peach"), ItemName(R.drawable.strawberry, "strawberry"),
             ItemName(R.drawable.tomato, "Tomato"))
 
+        val adapter = MyAdapter(itemName, R.layout.adapter_layout)
+
         val linearLaoutManager = LinearLayoutManager(this)
-        val adapter = MyAdapter(itemName)
 
         linearLaoutManager.orientation = LinearLayoutManager.VERTICAL
         recyclerView.layoutManager = linearLaoutManager
@@ -39,22 +40,37 @@ class MainActivity : AppCompatActivity() {
 
         gridLayoutManager.orientation = GridLayoutManager.VERTICAL
         recyclerView.layoutManager = gridLayoutManager
-        recyclerView.adapter = MyAdapter(itemName)
+        recyclerView.adapter = adapter
 */
+        adapter.setOnItemClickListener(object: MyAdapter.OnItemClickListener {
+            override fun onItemClick(p0: View, p1: Int) {
+                Log.d(KotlinLog, "recyclerView click Item: $p1")
+            }
+        })
+        adapter.setOnItemLongClickListener(object: MyAdapter.OnItemLongClickListener {
+            override fun onItemLongClick(po: View, p1: Int): Boolean {
+                Log.d(KotlinLog, "recyclerView long click Item: $p1")
+                return true
+            }
+        })
+
     }
 }
 
 class ItemName(val photo: Int, val name: String)
 
-class MyAdapter(private val data: ArrayList<ItemName>): RecyclerView.Adapter<MyAdapter.ViewHolder>() {
-    lateinit var clickListener: AdapterView.OnItemClickListener
-    lateinit var clickLongListener: AdapterView.OnItemLongClickListener
-    class ViewHolder(v: View): RecyclerView.ViewHolder(v) {
+class MyAdapter(private val data: ArrayList<ItemName>, private val layout: Int): RecyclerView.Adapter<MyAdapter.ViewHolder>() {
+    lateinit var clickListener: OnItemClickListener
+    lateinit var clickLongListener: OnItemLongClickListener
+    inner class ViewHolder(v: View): RecyclerView.ViewHolder(v) {
         val itemName: TextView = v.findViewById(R.id.txvName)
         val itemPhoto: ImageView = v.findViewById(R.id.imgPhoto)
         init {
-            v.setOnClickListener(View.OnClickListener {
-                Log.d(KotlinLog, "recyclerView click")
+            v.setOnClickListener({
+                    clickListener.onItemClick(it, adapterPosition)
+            })
+            v.setOnLongClickListener({
+                clickLongListener.onItemLongClick(it, adapterPosition)
             })
         }
     }
@@ -67,17 +83,17 @@ class MyAdapter(private val data: ArrayList<ItemName>): RecyclerView.Adapter<MyA
         fun onItemLongClick(po: View, p1: Int): Boolean
     }
 
-    fun setOnItemClickListener(p0: AdapterView.OnItemClickListener) {
+    fun setOnItemClickListener(p0: OnItemClickListener) {
         this.clickListener = p0
     }
 
-    fun setOnItemLongClickListener(p0: AdapterView.OnItemLongClickListener): Boolean {
+    fun setOnItemLongClickListener(p0: OnItemLongClickListener): Boolean {
         this.clickLongListener = p0
         return true
     }
 
     override fun onCreateViewHolder(p0: ViewGroup, p1: Int): ViewHolder {
-        val v = LayoutInflater.from(p0.context).inflate(R.layout.adapter_layout, p0, false)
+        val v = LayoutInflater.from(p0.context).inflate(layout, p0, false)
         return ViewHolder(v)
     }
 
