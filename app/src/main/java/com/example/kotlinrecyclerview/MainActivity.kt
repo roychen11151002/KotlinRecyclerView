@@ -29,19 +29,22 @@ class MainActivity : AppCompatActivity() {
             ItemName(R.drawable.tomato, "Tomato"))
 
         val adapter = MyAdapter(itemName, R.layout.adapter_layout)
+        val sel: Boolean = false
+        if(sel) {
+            val linearLaoutManager = LinearLayoutManager(this)
 
-        val linearLaoutManager = LinearLayoutManager(this)
+            linearLaoutManager.orientation = LinearLayoutManager.VERTICAL
+            recyclerView.layoutManager = linearLaoutManager
+            recyclerView.adapter = adapter
+        }
+        else {
+            val gridLayoutManager = GridLayoutManager(this, 3)
 
-        linearLaoutManager.orientation = LinearLayoutManager.VERTICAL
-        recyclerView.layoutManager = linearLaoutManager
-        recyclerView.adapter = adapter
-/*
-        val gridLayoutManager = GridLayoutManager(this, 3)
+            gridLayoutManager.orientation = GridLayoutManager.VERTICAL
+            recyclerView.layoutManager = gridLayoutManager
+            recyclerView.adapter = adapter
+        }
 
-        gridLayoutManager.orientation = GridLayoutManager.VERTICAL
-        recyclerView.layoutManager = gridLayoutManager
-        recyclerView.adapter = adapter
-*/
         adapter.setOnItemClickListener(object: MyAdapter.OnItemClickListener {
             override fun onItemClick(p0: View, p1: Int) {
                 Log.d(KotlinLog, "recyclerView click Item: $p1")
@@ -53,7 +56,6 @@ class MainActivity : AppCompatActivity() {
                 return true
             }
         })
-
     }
 }
 
